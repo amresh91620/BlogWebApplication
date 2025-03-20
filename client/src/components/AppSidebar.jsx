@@ -20,6 +20,7 @@ const AppSidebar = () => {
             <SidebarMenuItem>
                 <SidebarMenuButton>
                     <Link to="">Home</Link>
+                    <Link to="">Home</Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
