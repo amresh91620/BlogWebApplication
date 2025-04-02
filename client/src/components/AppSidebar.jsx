@@ -17,6 +17,7 @@ import { FaBlog } from "react-icons/fa6";
 import { FaComments } from "react-icons/fa6";
 import { LuUsers } from "react-icons/lu";
 import { GoDotFill } from "react-icons/go";
+import { RouteBlog, RouteCategoryDetails } from "@/helpers/RouteName";
 
 const AppSidebar = () => {
   return (
@@ -36,13 +37,13 @@ const AppSidebar = () => {
             <SidebarMenuItem>
                 <SidebarMenuButton>
                   <BiCategory/>
-                    <Link to="">Categories</Link>
+                    <Link to={RouteCategoryDetails}>Categories</Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton>
                   <FaBlog/>
-                    <Link to="">Blogs</Link>
+                    <Link to={RouteBlog}>Blogs</Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
