@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import logo from "@/assets/images/logo.png";
 import { Button } from "./ui/button";
+import profile from "@/assets/images/profile.png"; // Default Profile Image
 import { Link, useNavigate } from "react-router-dom";
 import { MdLogin, MdAdd, MdLogout } from "react-icons/md";
 import SearchBox from "./SearchBox";
+import axios from "axios";
 import { RouteBlogAdd, RouteProfile, RouteSignIn } from "@/helpers/RouteName";
 import {
   DropdownMenu,
@@ -21,6 +23,7 @@ const Topbar = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
     if (loggedInUser) {
@@ -28,6 +31,7 @@ const Topbar = () => {
     }
     setLoading(false);
   }, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem("user");  // Remove the user from localStorage
@@ -64,11 +68,12 @@ const Topbar = () => {
             <DropdownMenuTrigger>
               <Avatar>
                 <AvatarImage
-                  src={user.profilePicture || "/default-profile.png"}
+                  src={user.profilePicture || {profile}}
                   alt="Profile"
                 />
                 <AvatarFallback>
-                  <FaRegUserCircle />
+                  <img src={profile} alt="Fallback" />
+
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>

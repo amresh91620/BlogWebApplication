@@ -6,7 +6,7 @@ import blogRoutes from './routes/blogRoutes.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/userRoutes.js'; // ✅ Use import for consistency
 import commentRoutes from "./routes/commentRoutes.js";
-
+import categoryRoutes from "./routes/category.js"; // Import category routes
 
 dotenv.config();
 
@@ -20,15 +20,20 @@ app.use(express.json());
 // Static folder for uploaded images
 app.use('/uploads', express.static('uploads'));
 
+
+
 // Routes
 app.get('/', (req, res) => {
   res.send('Server is running 🎉');
 });
 
+
 app.use('/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/users', userRoutes); // ✅ Mount user routes here
 app.use("/api/comments", commentRoutes); // Mount comment routes here
+app.use("/api", authRoutes); // Mount auth routes here
+app.use("/api/categories", categoryRoutes); // This makes GET /api/categories available
 
 
 // Start server

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -11,17 +11,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";  // Don't forget to import useNavigate for navigation
+import { useNavigate } from "react-router-dom"; // Don't forget to import useNavigate for navigation
+import axios from "axios";
 
 function AddBlog() {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [category, setCategory] = useState("Technology");
+  const [category, setCategory] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [errors, setErrors] = useState({}); // To hold validation errors
-  const navigate = useNavigate(); // For navigation after success
+  const [errors, setErrors] = useState({});
+  const [categories, setCategories] = useState([]); // New state to hold categories
+  const navigate = useNavigate();
+
+  // Fetch categories from the backend
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/categories");
+      setCategories(response.data); // Set categories state with the fetched data
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories(); // Fetch categories when the component mounts
+  }, []);
 
   const validateForm = () => {
     const errors = {};
@@ -32,7 +48,6 @@ function AddBlog() {
     if (!image) errors.image = "Image is required."; // Remove if image is optional
 
     setErrors(errors);
-
     return Object.keys(errors).length === 0; // Return true if no errors
   };
 
@@ -48,7 +63,7 @@ function AddBlog() {
     formData.append("category", category);
     formData.append("content", content);
     formData.append("user_id", user.id);
-    formData.append("image", image); // optional, backend should handle image saving
+    formData.append("image", image);
 
     try {
       setUploading(true);
@@ -62,12 +77,10 @@ function AddBlog() {
         alert("Blog posted successfully!");
         setTitle("");
         setSlug("");
-        setCategory("Technology");
+        setCategory("");
         setContent("");
         setImage(null);
-
-        // Redirect to homepage after posting
-        navigate("/");
+        navigate("/"); // Redirect after posting
       } else {
         alert(data.error || "Something went wrong.");
       }
@@ -114,10 +127,11 @@ function AddBlog() {
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Health & Wellness">Health & Wellness</SelectItem>
-                  <SelectItem value="Finance">Finance</SelectItem>
-                  <SelectItem value="Travel">Travel</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.category && (

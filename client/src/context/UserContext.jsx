@@ -1,34 +1,33 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+// UserContext.jsx
+import { createContext, useState, useEffect, useContext } from "react";
 
-// Create a Context for the user data
 const UserContext = createContext();
 
-// Create a provider component
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load user data from localStorage
   useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-    if (loggedInUser) {
-      setUser(loggedInUser);
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setUser(storedUser);
     }
   }, []);
 
-  // Update user in context and localStorage
-  const updateUser = (updatedUser) => {
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+  const updateUser = (newUser) => {
+    localStorage.setItem("user", JSON.stringify(newUser));
+    setUser(newUser);
+  };
+
+  const clearUser = () => {
+    localStorage.removeItem("user");
+    setUser(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, updateUser }}>
+    <UserContext.Provider value={{ user, updateUser, clearUser }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-// Custom hook to use user context
-export const useUser = () => {
-  return useContext(UserContext);
-};
+export const useUser = () => useContext(UserContext);

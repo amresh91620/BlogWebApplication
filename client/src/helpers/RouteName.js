@@ -10,3 +10,4 @@ export const RouteBlog = "/blog"
 export const RouteBlogAdd = "/blog/add"
 export const RouteBlogEdit = "/blog/edit/:id"
 export const RouteBlogDetails = "/blog/details/:id"
+export const RouteCategoryBlogs = "/category/:slug";

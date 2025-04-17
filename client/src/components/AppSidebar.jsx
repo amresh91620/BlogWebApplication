@@ -13,17 +13,25 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/images/logo.png";
 import { IoHomeSharp } from "react-icons/io5";
 import { FaComments } from "react-icons/fa6";
-import { LuUsers, LuListTree } from "react-icons/lu"; // Added icon for categories
+import { LuUsers, LuListTree } from "react-icons/lu";
 import { RouteBlog, RouteCategoryDetails } from "@/helpers/RouteName";
+import { RxDotFilled } from "react-icons/rx";
 
 const AppSidebar = () => {
   const [user, setUser] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
     if (loggedInUser) {
       setUser(loggedInUser);
     }
+
+    // Fetch categories from backend
+    fetch("http://localhost:5000/api/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
   const isAdmin = user?.role === "admin";
@@ -46,7 +54,6 @@ const AppSidebar = () => {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* Only show blogs for non-admin users */}
             {user && user.role !== "admin" && (
               <SidebarMenuItem>
                 <SidebarMenuButton>
@@ -81,17 +88,22 @@ const AppSidebar = () => {
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* Show Categories for Guest + Logged-in Users (non-admin) */}
-        {(isGuest || isUser) && (
+        {(isGuest || isUser) && categories.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>Categories</SidebarGroupLabel>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Link to="#">Category Item</Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {categories.map((cat) => (
+                <SidebarMenuItem key={cat.id}>
+                  <SidebarMenuButton className="flex items-center gap-2">
+                    <RxDotFilled className="text-gray-500 text-lg" />
+                    <Link to={`/category/${cat.name}`}>  {/* Use category name directly */}
+                      {cat.name}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
+
           </SidebarGroup>
         )}
       </SidebarContent>

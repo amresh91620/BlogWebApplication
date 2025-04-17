@@ -30,7 +30,7 @@ const ManageComments = () => {
   }, []);
 
   return (
-    <Card className="m-5">
+    <Card className="shadow-1xl rounded-xl overflow-hidden bg-white p-2 max-w-6xl mx-auto mt-20">
       <CardHeader>
         <CardTitle>Manage Comments</CardTitle>
       </CardHeader>

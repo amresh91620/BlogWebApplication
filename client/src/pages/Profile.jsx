@@ -78,6 +78,8 @@ const Profile = () => {
       localStorage.setItem("user", JSON.stringify(updatedData));
       setUser(updatedData);
       alert("Profile updated successfully!");
+       // 🔄 Reload the page
+    window.location.reload();
     } catch (error) {
       console.error(error.response?.data || error);
       alert("Error updating profile");

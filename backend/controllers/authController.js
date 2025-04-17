@@ -68,7 +68,6 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 // UPDATE PROFILE
 const updateUserProfile = async (req, res) => {
   const { name, email, bio, password, profilePicture } = req.body;
@@ -77,39 +76,68 @@ const updateUserProfile = async (req, res) => {
     return res.status(400).json({ error: "Name and email are required" });
   }
 
+  const cleanEmail = email.trim().toLowerCase();
+
   try {
-    // Check if user exists in the database
-    const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [cleanEmail]);
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const user = result.rows[0]; // Fetch the existing user
+    const user = result.rows[0];
 
-    let finalPassword = password;
-    if (password) {
-      // If password is provided, hash it
-      const salt = await bcrypt.genSalt(10);
-      finalPassword = await bcrypt.hash(password, salt);
-    } else {
-      // If no password provided, use the existing password
-      finalPassword = user.password;
-    }
+    let finalPassword = password
+      ? await bcrypt.hash(password, await bcrypt.genSalt(10))
+      : user.password;
 
-    // Update user profile in the DB
-    var updateQuery = `
+    const bioToUpdate = bio ?? user.bio;
+    const profilePictureToUpdate = profilePicture ?? user.profilePicture;
+
+    const updateQuery = `
       UPDATE users
       SET name = $1, bio = $2, password = $3, profilePicture = $4
       WHERE email = $5
     `;
-    await pool.query(updateQuery, [name, bio, finalPassword, profilePicture, email]);
 
-    res.status(200).json({ message: "Profile updated successfully" });
+    await pool.query(updateQuery, [
+      name,
+      bioToUpdate,
+      finalPassword,
+      profilePictureToUpdate,
+      cleanEmail,
+    ]);
+
+    const updatedUser = await pool.query("SELECT * FROM users WHERE email = $1", [cleanEmail]);
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser.rows[0],
+    });
   } catch (err) {
     console.error("Profile update error:", err);
     res.status(500).json({ error: "Failed to update profile" });
   }
 };
 
+// GET USER BY EMAIL
+const getUserByEmail = async (req, res) => {
+  const { email } = req.params;
+  const cleanEmail = email.trim().toLowerCase();
 
-export { registerUser, loginUser, updateUserProfile };
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [cleanEmail]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
+};
+
+
+export { registerUser, loginUser, updateUserProfile, getUserByEmail };

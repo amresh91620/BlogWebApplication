@@ -15,7 +15,8 @@ import EditBlog from './pages/Blog/EditBlog';
 import SingleBlogDetails from './pages/SingleBlogDetails';
 import ManageComments from "./pages/ManageComments";
 import ManageUsers from "./pages/ManageUsers";
-
+import CategoryPage from './pages/CategoryPage';
+import SearchResults from './pages/SearchResults';
 
 const App = () => {
   return (
@@ -35,14 +36,19 @@ const App = () => {
           <Route path={RouteBlog} element={<BlogDetails />} />
           <Route path={RouteBlogEdit} element={<EditBlog />} />
           <Route path="/blog/:id" element={<SingleBlogDetails />} />
+
+          <Route path="/manage-comments" element={<ManageComments />} />
+        <Route path="/manage-users" element={<ManageUsers />} />
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
+        <Route path="/search/:query" element={<SearchResults />} />
+
+
         </Route>
 
         <Route path={RouteSignIn} element={<SignIn />} />
         <Route path={RouteSignUp} element={<SignUp />} />
 
-        <Route path="/manage-comments" element={<ManageComments />} />
-        <Route path="/manage-users" element={<ManageUsers />} />
-       
+     
       </Routes>
     </BrowserRouter>
   );

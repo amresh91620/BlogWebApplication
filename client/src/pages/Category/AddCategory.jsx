@@ -5,27 +5,44 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { RouteCategoryDetails } from "@/helpers/RouteName";
+import axios from "axios";
 
 const AddCategory = () => {
   const [category, setCategory] = useState("");
   const [slug, setSlug] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Category Added:", { category, slug });
-    navigate(RouteCategoryDetails); // Redirect after adding
+    setError("");
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/categories", {
+        name: category,
+        slug: slug,
+      });
+
+      if (response.status === 201) {
+        navigate(RouteCategoryDetails); // Redirect on success
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Category creation failed");
+    }
   };
 
   return (
-    <div className="flex justify-center min-h-[80vh]"> {/* Centered and reduced height */}
-      <div className="flex items-center justify-center w-full max-w-md"> {/* Centering wrapper */}
-        <Card className="p-6 w-full"> {/* Full width within max-w-md */}
+    <div className="flex justify-center min-h-[80vh]">
+      <div className="flex items-center justify-center w-full max-w-md">
+        <Card className="p-6 w-full">
           <CardHeader>
             <CardTitle>Add Category</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && <p className="text-red-600 text-sm">{error}</p>}
               <div>
                 <Label htmlFor="category">Category Name</Label>
                 <Input
